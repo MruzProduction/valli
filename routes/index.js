@@ -3,20 +3,30 @@ var router = express.Router();
 var express = require('express');
 var router = express.Router();
 var User = require('../models/user').User;
-/* GET home page. */
+
+
+router.post('/logout', function(req, res, next) {
+  req.session.destroy();
+  res.locals.user = null;
+  res.redirect('/');
+  });
+  
+
 router.get('/', function(req, res, next) {
   req.session.greeting = "Hi!!!";
   res.render('index', { title: 'Express',
   counter:req.session.counter });
   });
   
+
+
 router.get('/logreg', function(req, res, next) {
   res.render('logreg',{title: 'Вход', error: null});
   });
 
- /* POST login/registration page. */
+
 router.post('/logreg', async function(req, res, next) {
-  var username = req.body.usernamevar 
+  var username = req.body.username
   var password = req.body.password
   console.log(username);
   console.log(password);
@@ -31,15 +41,18 @@ router.post('/logreg', async function(req, res, next) {
   res.redirect('/');
   } else {
   //res.send("<h1>Пользователь найден</h1>");
-  var foundUser = users[0];
-  if(foundUser.checkPassword(password)){
-  req.session.user_id = foundUser._id
-  res.redirect('/')
-  } else {
-  res.render('logreg',{title: 'Вход'});
-  }
-  }
-  });
-  
 
+var foundUser = users[0];
+if(foundUser.checkPassword(password)){
+req.session.user_id = foundUser._id
+res.redirect('/')
+} else {
+res.render('logreg',{title: 'Вход', error: 'Пароль неверный'});
+}
+
+
+}
+}
+);
+  
 module.exports = router;
